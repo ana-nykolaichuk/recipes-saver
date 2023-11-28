@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class RecipesSaverApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(RecipesSaverApplication.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(RecipesSaverApplication.class, args);
+  }
 
 }

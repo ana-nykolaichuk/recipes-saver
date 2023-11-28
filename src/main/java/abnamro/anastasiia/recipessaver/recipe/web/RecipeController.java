@@ -2,8 +2,11 @@ package abnamro.anastasiia.recipessaver.recipe.web;
 
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
+import abnamro.anastasiia.recipessaver.recipe.api.Recipe;
 import abnamro.anastasiia.recipessaver.recipe.api.RecipeCreationRequest;
+import abnamro.anastasiia.recipessaver.recipe.api.RecipeService;
 import abnamro.anastasiia.recipessaver.recipe.api.RecipeUpdateRequest;
+import com.google.common.collect.ImmutableSet;
 import java.util.Set;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,24 +21,30 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/recipe")
 public final class RecipeController {
-    @PostMapping
-    public void createRecipe(@RequestBody RecipeCreationRequest request) {
-        throw new UnsupportedOperationException("Sit tight, it will be implemented soon.");
-    }
+  private final RecipeService recipeService;
 
-    @GetMapping
-    public String getRecipes(@RequestParam(required = false) Set<String> ids) {
-        throw new UnsupportedOperationException("Sit tight, it will be implemented soon.");
-    }
+  public RecipeController(RecipeService recipeService) {
+    this.recipeService = recipeService;
+  }
 
-    @PutMapping
-    public void updateRecipe(@RequestBody RecipeUpdateRequest request) {
-        throw new UnsupportedOperationException("Sit tight, it will be implemented soon.");
-    }
+  @PostMapping
+  public Recipe createRecipe(@RequestBody RecipeCreationRequest request) {
+    return recipeService.createRecipe(request);
+  }
 
-    @DeleteMapping
-    @ResponseStatus(NO_CONTENT)
-    public void deleteRecipe(@RequestParam String id) {
-        throw new UnsupportedOperationException("Sit tight, it will be implemented soon.");
-    }
+  @GetMapping
+  public ImmutableSet<Recipe> getRecipes(@RequestParam(required = false) Set<String> ids) {
+    return recipeService.getRecipes(ImmutableSet.copyOf(ids));
+  }
+
+  @PutMapping
+  public Recipe updateRecipe(@RequestBody RecipeUpdateRequest request) {
+    return recipeService.updateRecipe(request.getRecipeId(), request.getRecipe());
+  }
+
+  @DeleteMapping
+  @ResponseStatus(NO_CONTENT)
+  public void deleteRecipe(@RequestParam String id) {
+    recipeService.deleteRecipe(id);
+  }
 }

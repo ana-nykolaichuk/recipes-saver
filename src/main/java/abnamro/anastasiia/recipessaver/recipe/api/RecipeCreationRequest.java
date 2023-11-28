@@ -2,17 +2,36 @@ package abnamro.anastasiia.recipessaver.recipe.api;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import com.google.common.collect.ImmutableSet;
+import java.util.Set;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-public record RecipeCreationRequest(
-        String name,
-        ImmutableSet<Ingredient> ingredients,
-        String preparationInstructions,
-        int servingsNumber,
-        ImmutableSet<RecipeTag> tags) {
-    public RecipeCreationRequest {
-        checkArgument(!name.isBlank(), "The name should be present.");
-        checkArgument(!ingredients.isEmpty(), "At least one ingredient must be present.");
-        checkArgument(servingsNumber > 0, "The servings number should be more than 0.");
-    }
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class RecipeCreationRequest {
+  private String name;
+  private Set<Ingredient> ingredients;
+  private String preparationInstructions;
+  private int servingsNumber;
+  private Set<RecipeTag> recipeTags;
+
+  public RecipeCreationRequest name(String name) {
+    checkArgument(!name.isBlank(), "The name should be present.");
+    this.name = name;
+    return this;
+  }
+
+  public RecipeCreationRequest ingredients(Set<Ingredient> ingredients) {
+    checkArgument(!ingredients.isEmpty(), "At least one ingredient must be present.");
+    this.ingredients = ingredients;
+    return this;
+  }
+
+  public RecipeCreationRequest servingsNumber(int servingsNumber) {
+    checkArgument(servingsNumber > 0, "The servings number should be more than 0.");
+    this.servingsNumber = servingsNumber;
+    return this;
+  }
 }
