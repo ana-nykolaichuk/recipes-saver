@@ -3,7 +3,7 @@ package abnamro.anastasiia.recipessaver.recipe.web;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 import abnamro.anastasiia.recipessaver.recipe.api.Recipe;
-import abnamro.anastasiia.recipessaver.recipe.api.RecipeCreationRequest;
+import abnamro.anastasiia.recipessaver.recipe.api.RecipeDto;
 import abnamro.anastasiia.recipessaver.recipe.api.RecipeService;
 import abnamro.anastasiia.recipessaver.recipe.api.RecipeUpdateRequest;
 import com.google.common.collect.ImmutableSet;
@@ -28,8 +28,8 @@ public final class RecipeController {
   }
 
   @PostMapping
-  public Recipe createRecipe(@RequestBody RecipeCreationRequest request) {
-    return recipeService.createRecipe(request);
+  public Recipe createRecipe(@RequestBody RecipeDto recipeDto) {
+    return recipeService.createRecipe(recipeDto);
   }
 
   @GetMapping

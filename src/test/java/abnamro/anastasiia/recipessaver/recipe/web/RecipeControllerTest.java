@@ -4,10 +4,11 @@ import static org.mockito.Mockito.when;
 
 import abnamro.anastasiia.recipessaver.recipe.api.Ingredient;
 import abnamro.anastasiia.recipessaver.recipe.api.Recipe;
-import abnamro.anastasiia.recipessaver.recipe.api.RecipeCreationRequest;
+import abnamro.anastasiia.recipessaver.recipe.api.RecipeDto;
 import abnamro.anastasiia.recipessaver.recipe.api.RecipeService;
 import abnamro.anastasiia.recipessaver.recipe.api.RecipeTag;
 import abnamro.anastasiia.recipessaver.recipe.api.RecipeUpdateRequest;
+import abnamro.anastasiia.recipessaver.recipe.logic.data.RecipeRepository;
 import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,36 +21,48 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 final class RecipeControllerTest {
   private static final String RECIPE_ID = "recipeId";
-  private static final Recipe RECIPE = new Recipe(
-      RECIPE_ID,
-      "recipeName",
-      ImmutableSet.of(
-          new Ingredient("ingredientName", "amountDescription")),
-      "preparationInstructions",
-      1,
-      ImmutableSet.of(RecipeTag.BEGINNER_FRIENDLY));
+  private static final Recipe RECIPE = Recipe.builder()
+      .id(RECIPE_ID)
+      .name("recipeName")
+      .ingredients(ImmutableSet.of(
+          new Ingredient("ingredientName", "amountDescription")))
+      .preparationInstructions("preparationInstructions")
+      .servingsNumber(1)
+      .recipeTags(ImmutableSet.of(RecipeTag.BEGINNER_FRIENDLY))
+      .build();
+
+  private static final RecipeDto RECIPE_DTO = RecipeDto.builder()
+      .name("recipeName")
+      .ingredients(ImmutableSet.of(
+          new Ingredient("ingredientName", "amountDescription")))
+      .preparationInstructions("preparationInstructions")
+      .servingsNumber(1)
+      .recipeTags(ImmutableSet.of(RecipeTag.BEGINNER_FRIENDLY))
+      .build();
 
   @MockBean
   private RecipeService service;
+  @MockBean
+  private RecipeRepository repository;
   @Autowired
   private WebTestClient webClient;
 
   @Test
   public void createRecipe() {
-    RecipeCreationRequest request =
-        new RecipeCreationRequest(
+    RecipeDto recipeDto =
+        new RecipeDto(
             "recipeName",
             ImmutableSet.of(
                 new Ingredient("ingredientName", "amountDescription")),
             "preparationInstructions",
             1,
             ImmutableSet.of(RecipeTag.BEGINNER_FRIENDLY));
-    when(service.createRecipe(request)).thenReturn(RECIPE);
+    when(service.createRecipe(recipeDto)).thenReturn(RECIPE);
 
     webClient
         .post()
         .uri("/recipe")
-        .bodyValue(request)
+        .bodyValue(recipeDto)
         .exchange()
         .expectStatus()
         .isOk()
@@ -74,12 +87,12 @@ final class RecipeControllerTest {
 
   @Test
   public void updateRecipe() {
-    when(service.updateRecipe(RECIPE_ID, RECIPE)).thenReturn(RECIPE);
+    when(service.updateRecipe(RECIPE_ID, RECIPE_DTO)).thenReturn(RECIPE);
 
     webClient
         .put()
         .uri("/recipe")
-        .bodyValue(new RecipeUpdateRequest(RECIPE_ID, RECIPE))
+        .bodyValue(new RecipeUpdateRequest(RECIPE_ID, RECIPE_DTO))
         .exchange()
         .expectStatus()
         .isOk()

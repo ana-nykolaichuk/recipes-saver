@@ -3,10 +3,12 @@ package abnamro.anastasiia.recipessaver.recipe.api;
 import java.io.Serializable;
 import java.util.Set;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
+@Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

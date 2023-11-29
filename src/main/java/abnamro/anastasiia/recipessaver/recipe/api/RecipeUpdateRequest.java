@@ -9,5 +9,5 @@ import lombok.Getter;
 @Getter
 public class RecipeUpdateRequest {
   private String recipeId;
-  private Recipe recipe;
+  private RecipeDto recipe;
 }
