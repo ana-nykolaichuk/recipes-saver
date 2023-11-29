@@ -22,4 +22,8 @@ To build horizontally scalable service and taking into account developer experie
 - User removes a recipe from favourites
 
 ## Deployment instructions
-TBD
+To locally roll out the service and all the associated containers run the next commands: 
+1. `mvn package` to assemble the `jar` to be deployed
+2. `docker compose up --build` to deploy the service and associated images
+
+You can reach the service on `localhost:8080` and use it via curl or postman. 
