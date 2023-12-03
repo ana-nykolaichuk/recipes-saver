@@ -1,18 +1,20 @@
 package abnamro.anastasiia.recipessaver.recipe.logic;
 
+import static abnamro.anastasiia.recipessaver.recipe.logic.RecipeMapper.toRecipe;
+
+import abnamro.anastasiia.recipessaver.recipe.api.FindRecipesFilter;
 import abnamro.anastasiia.recipessaver.recipe.api.Recipe;
 import abnamro.anastasiia.recipessaver.recipe.api.RecipeDto;
 import abnamro.anastasiia.recipessaver.recipe.api.RecipeService;
 import abnamro.anastasiia.recipessaver.recipe.logic.data.RecipeRepository;
 import com.google.common.collect.ImmutableSet;
-import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 final class RecipeServiceImpl implements RecipeService {
-  private static final Logger LOG = LoggerFactory.getLogger(RecipeServiceImpl.class);
   private final RecipeRepository repository;
 
   RecipeServiceImpl(RecipeRepository repository) {
@@ -21,8 +23,8 @@ final class RecipeServiceImpl implements RecipeService {
 
   @Override
   public Recipe createRecipe(RecipeDto recipe) {
-    LOG.info("Inserting recipe {}", recipe);
-    return repository.insert(recipe);
+    log.info("Inserting recipe {}", recipe);
+    return repository.insert(toRecipe(UUID.randomUUID().toString(), recipe));
   }
 
   @Override
@@ -32,29 +34,22 @@ final class RecipeServiceImpl implements RecipeService {
 
   @Override
   public Recipe updateRecipe(String id, RecipeDto recipeDto) {
-    LOG.info("Updating recipe with id='{}' to have fields {}", id, recipeDto);
+    log.info("Updating recipe with id='{}' to have fields {}", id, recipeDto);
 
-    Recipe recipe = Recipe.builder()
-        .id(id)
-        .name(recipeDto.getName())
-        .ingredients(recipeDto.getIngredients())
-        .preparationInstructions(recipeDto.getPreparationInstructions())
-        .servingsNumber(recipeDto.getServingsNumber())
-        .recipeTags(recipeDto.getRecipeTags())
-        .build();
-
-    Optional<Recipe> updateResult = repository.update(recipe);
-    if (updateResult.isEmpty()) {
-      throw new IllegalArgumentException(String.format("No recipe with id='%s' to update was found", id));
-    }
-
-    return updateResult.orElseThrow();
+    return repository.update(toRecipe(id, recipeDto))
+        .orElseThrow(() ->
+            new IllegalArgumentException(String.format("No recipe with id='%s' to update was found", id)));
   }
 
   @Override
   public void deleteRecipe(String id) {
-    LOG.info("Deleting recipe with id='{}'", id);
+    log.info("Deleting recipe with id='{}'", id);
 
     repository.delete(id);
+  }
+
+  @Override
+  public ImmutableSet<Recipe> find(FindRecipesFilter filter) {
+    return repository.find(filter);
   }
 }

@@ -1,26 +1,25 @@
-package abnamro.anastasiia.recipessaver.recipe.logic.data;
+package abnamro.anastasiia.recipessaver.recipe.logic;
 
 import abnamro.anastasiia.recipessaver.recipe.api.Recipe;
 import abnamro.anastasiia.recipessaver.recipe.api.RecipeDto;
-import java.util.Optional;
-import java.util.UUID;
+import abnamro.anastasiia.recipessaver.recipe.logic.data.RecipeDocument;
 
-final class RecipeMapper {
+public final class RecipeMapper {
   private RecipeMapper() {
   }
 
-  static RecipeDocument toRecipeDocument(RecipeDto creationRequest) {
-    return RecipeDocument.builder()
-        .id(UUID.randomUUID().toString())
-        .name(creationRequest.getName())
-        .ingredients(creationRequest.getIngredients())
-        .preparationInstructions(creationRequest.getPreparationInstructions())
-        .servingsNumber(creationRequest.getServingsNumber())
-        .recipeTags(creationRequest.getRecipeTags())
+  public static Recipe toRecipe(String id, RecipeDto recipeDto) {
+    return Recipe.builder()
+        .id(id)
+        .name(recipeDto.getName())
+        .ingredients(recipeDto.getIngredients())
+        .preparationInstructions(recipeDto.getPreparationInstructions())
+        .servingsNumber(recipeDto.getServingsNumber())
+        .recipeTags(recipeDto.getRecipeTags())
         .build();
   }
 
-  static RecipeDocument toRecipeDocument(Recipe recipe) {
+  public static RecipeDocument toRecipeDocument(Recipe recipe) {
     return RecipeDocument.builder()
         .id(recipe.getId())
         .name(recipe.getName())
@@ -31,7 +30,7 @@ final class RecipeMapper {
         .build();
   }
 
-  static Recipe toRecipe(RecipeDocument recipeDocument) {
+  public static Recipe toRecipe(RecipeDocument recipeDocument) {
     return Recipe.builder()
         .id(recipeDocument.getId())
         .name(recipeDocument.getName())
@@ -40,9 +39,5 @@ final class RecipeMapper {
         .servingsNumber(recipeDocument.getServingsNumber())
         .recipeTags(recipeDocument.getRecipeTags())
         .build();
-  }
-
-  static Optional<Recipe> toRecipe(Optional<RecipeDocument> recipeDocument) {
-    return recipeDocument.map(RecipeMapper::toRecipe);
   }
 }

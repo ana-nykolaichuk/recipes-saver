@@ -11,5 +11,20 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Ingredient {
   private String name;
-  private String amountDescription;
+  private Amount amount;
+
+  @Data
+  @Builder
+  public static class Amount {
+    double amount;
+    IngredientAmountType type;
+  }
+
+  public enum IngredientAmountType {
+    GR,
+    KG,
+    ST,
+    TBSP,
+    TSP
+  }
 }

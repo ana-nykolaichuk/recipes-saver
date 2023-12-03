@@ -1,15 +1,20 @@
 package abnamro.anastasiia.recipessaver.recipe.web;
 
+import static abnamro.anastasiia.recipessaver.recipe.api.Ingredient.IngredientAmountType.TBSP;
+import static abnamro.anastasiia.recipessaver.recipe.api.RecipeTag.BEGINNER_FRIENDLY;
+import static abnamro.anastasiia.recipessaver.recipe.api.RecipeTag.VEGETARIAN;
 import static org.mockito.Mockito.when;
 
+import abnamro.anastasiia.recipessaver.recipe.api.FindRecipesFilter;
 import abnamro.anastasiia.recipessaver.recipe.api.Ingredient;
+import abnamro.anastasiia.recipessaver.recipe.api.Ingredient.Amount;
 import abnamro.anastasiia.recipessaver.recipe.api.Recipe;
 import abnamro.anastasiia.recipessaver.recipe.api.RecipeDto;
 import abnamro.anastasiia.recipessaver.recipe.api.RecipeService;
-import abnamro.anastasiia.recipessaver.recipe.api.RecipeTag;
 import abnamro.anastasiia.recipessaver.recipe.api.RecipeUpdateRequest;
 import abnamro.anastasiia.recipessaver.recipe.logic.data.RecipeRepository;
 import com.google.common.collect.ImmutableSet;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -21,23 +26,28 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 final class RecipeControllerTest {
   private static final String RECIPE_ID = "recipeId";
+  private static final Ingredient INGREDIENT = Ingredient.builder()
+      .name("ingredientName")
+      .amount(Amount.builder()
+          .amount(1)
+          .type(TBSP)
+          .build())
+      .build();
   private static final Recipe RECIPE = Recipe.builder()
       .id(RECIPE_ID)
       .name("recipeName")
-      .ingredients(ImmutableSet.of(
-          new Ingredient("ingredientName", "amountDescription")))
+      .ingredients(ImmutableSet.of(INGREDIENT))
       .preparationInstructions("preparationInstructions")
       .servingsNumber(1)
-      .recipeTags(ImmutableSet.of(RecipeTag.BEGINNER_FRIENDLY))
+      .recipeTags(ImmutableSet.of(BEGINNER_FRIENDLY))
       .build();
 
   private static final RecipeDto RECIPE_DTO = RecipeDto.builder()
       .name("recipeName")
-      .ingredients(ImmutableSet.of(
-          new Ingredient("ingredientName", "amountDescription")))
+      .ingredients(ImmutableSet.of(INGREDIENT))
       .preparationInstructions("preparationInstructions")
       .servingsNumber(1)
-      .recipeTags(ImmutableSet.of(RecipeTag.BEGINNER_FRIENDLY))
+      .recipeTags(ImmutableSet.of(BEGINNER_FRIENDLY))
       .build();
 
   @MockBean
@@ -49,20 +59,12 @@ final class RecipeControllerTest {
 
   @Test
   public void createRecipe() {
-    RecipeDto recipeDto =
-        new RecipeDto(
-            "recipeName",
-            ImmutableSet.of(
-                new Ingredient("ingredientName", "amountDescription")),
-            "preparationInstructions",
-            1,
-            ImmutableSet.of(RecipeTag.BEGINNER_FRIENDLY));
-    when(service.createRecipe(recipeDto)).thenReturn(RECIPE);
+    when(service.createRecipe(RECIPE_DTO)).thenReturn(RECIPE);
 
     webClient
         .post()
         .uri("/recipe")
-        .bodyValue(recipeDto)
+        .bodyValue(RECIPE_DTO)
         .exchange()
         .expectStatus()
         .isOk()
@@ -108,5 +110,26 @@ final class RecipeControllerTest {
         .exchange()
         .expectStatus()
         .isNoContent();
+  }
+
+  @Test
+  public void findRecipe() {
+    FindRecipesFilter filter = FindRecipesFilter.builder()
+        .tagsIncluded(ImmutableSet.of(VEGETARIAN))
+        .preparationInstructions(Optional.of("oven"))
+        .build();
+
+    when(service.find(filter)).thenReturn(ImmutableSet.of(RECIPE));
+
+    webClient
+        .post()
+        .uri("/recipe/find")
+        .bodyValue(filter)
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBodyList(Recipe.class)
+        .hasSize(1)
+        .contains(RECIPE);
   }
 }

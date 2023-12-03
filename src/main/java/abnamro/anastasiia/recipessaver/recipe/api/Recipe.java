@@ -6,10 +6,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.With;
 
 
 @Builder
 @Data
+@With
 @NoArgsConstructor
 @AllArgsConstructor
 public class Recipe implements Serializable {

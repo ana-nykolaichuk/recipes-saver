@@ -9,8 +9,8 @@ public interface RecipeService {
   Recipe createRecipe(RecipeDto recipe);
 
   /**
-   * Returns all the recipe based on their IDs. If the recipe is not found, it won't be present in
-   * the response.
+   * Returns recipes based on their IDs. Returns all recipes, if IDs are empty.
+   * If the recipe is not found, it won't be present in the response.
    */
   ImmutableSet<Recipe> getRecipes(ImmutableSet<String> ids);
 
@@ -24,4 +24,9 @@ public interface RecipeService {
    * Deletes the recipe by ID. Does nothing, if the recipe with given ID doesn't exist.
    */
   void deleteRecipe(String id);
+
+  /**
+   * Finds all the recipes based on the provided filter.
+   */
+  ImmutableSet<Recipe> find(FindRecipesFilter filter);
 }
